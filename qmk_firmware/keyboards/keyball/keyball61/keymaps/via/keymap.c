@@ -98,6 +98,18 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return state;
 }
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(1,KC_LNG2):
+        case LT(2,KC_ENT):
+        case LT(3,KC_LNG1):
+        case LT(3,KC_BSLS):
+            return 120;  // 130;
+        default:
+            return TAPPING_TERM;
+    }
+}
+
 #ifdef OLED_ENABLE
 
 #    include "lib/oledkit/oledkit.h"
