@@ -221,6 +221,14 @@ static inline bool should_report(void) {
         keyball.that_motion.y = 0;
     }
 #endif
+#if defined(KEYBALL_SCROLLBALL_INHIBITOR_TYPING) && KEYBALL_SCROLLBALL_INHIBITOR_TYPING > 0
+    if (TIMER_DIFF_32(now, keyball.last_typed) < KEYBALL_SCROLLBALL_INHIBITOR_TYPING) {
+        keyball.this_motion.x = 0;
+        keyball.this_motion.y = 0;
+        keyball.that_motion.x = 0;
+        keyball.that_motion.y = 0;
+    }
+#endif
     return true;
 }
 
@@ -502,6 +510,9 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     // store last keycode, row, and col for OLED
     keyball.last_kc  = keycode;
     keyball.last_pos = record->event.key;
+    if (record->event.pressed && IS_QK_BASIC(keycode)) {
+        keyball.last_typed = timer_read32();
+    }
 
     if (!process_record_user(keycode, record)) {
         return false;
@@ -575,3 +586,4 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
     return true;
 }
+
