@@ -36,6 +36,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    define KEYBALL_SCROLLBALL_INHIVITOR 50
 #endif
 
+#ifndef KEYBALL_SCROLLBALL_INHIBITOR_TYPING
+#   define KEYBALL_SCROLLBALL_INHIBITOR_TYPING 50
+#endif
+
 #ifndef KEYBALL_SCROLLSNAP_ENABLE
 #    define KEYBALL_SCROLLSNAP_ENABLE 1
 #endif
@@ -130,6 +134,7 @@ typedef struct {
     uint16_t       last_kc;
     keypos_t       last_pos;
     report_mouse_t last_mouse;
+    uint32_t       last_typed;
 } keyball_t;
 
 typedef enum {
