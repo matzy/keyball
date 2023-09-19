@@ -35,5 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAP_CODE_DELAY 5
 
-#define KEYBALL_CPI_DEFAULT 1200
+#define KEYBALL_CPI_DEFAULT 1000
 #define KEYBALL_SCROLL_DIV_DEFAULT 5
+
+#define TAPPING_TERM_PER_KEY
