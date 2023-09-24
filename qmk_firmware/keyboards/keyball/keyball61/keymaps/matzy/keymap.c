@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+enum custom_keycodes {
+    MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
+};
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_universal(
@@ -27,7 +31,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB   , KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                                      KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     , KC_MINS  ,
     LCTL_T(KC_ESC), KC_A, KC_S     , KC_D     , KC_F     , KC_G     ,                                      KC_H     , KC_J     , KC_K     , KC_L     , KC_SCLN  ,RALT_T(KC_QUOT),
     LSFT_T(KC_GRV), KC_Z, KC_X     , KC_C     , KC_V     , KC_B     , _______  ,                  _______, KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,RSFT_T(KC_EQL),
-    KC_LCTL  , KC_LGUI  , TG(2)    , KC_LALT  ,LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),  LT(1,KC_BSPC),LT(2,KC_ENT),LT(1,KC_LNG2),KC_RGUI, _______  , KC_RALT  ,LT(3,KC_BSLS)
+    KC_LCTL  , KC_LGUI  , MY_TGAM  , KC_LALT  ,LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),  LT(1,KC_BSPC),LT(2,KC_ENT),LT(1,KC_LNG2),KC_RGUI, _______  , KC_RALT  ,LT(3,KC_BSLS)
   ),
 
   [1] = LAYOUT_universal(
@@ -53,12 +57,49 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______  , KC_F9    , KC_F10   , KC_F11   , KC_F12   , XXXXXXX  , EE_CLR  ,                  EE_CLR  , KC_HOME  , KC_PGUP  , KC_PGDN  , KC_END   , SCRL_DVI , SCRL_DVD ,
     _______  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,                _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
   ),
+
+  [4] = LAYOUT_universal(
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , KC_BTN1  , _______  , KC_BTN2  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______
+  ),
 };
 // clang-format on
+ 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+    switch (keycode) {
+        case MY_TGAM:
+            if (record->event.pressed) {
+                set_auto_mouse_enable(!get_auto_mouse_enable());
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
+}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Auto enable scroll mode when the highest layer is 3
-    keyball_set_scroll_mode(get_highest_layer(state) == 3);
+
+    switch(get_highest_layer(remove_auto_mouse_layer(state, true))) {
+        // only be able to change auto mouse mode when they are in layer 0.
+        case 0:
+            // set_auto_mouse_enable(true);
+            keyball_set_scroll_mode(false);
+            break;            
+        case 3:
+            keyball_set_scroll_mode(true);
+            break;
+        default:
+            // other layers can't hold auto mouse mode.
+            // avoid any trouble cause they use a keycode on high pirority layer (ex.layer 4: auto mouse layer)
+            state = remove_auto_mouse_layer(state, false);
+            break;
+    }
+
     return state;
 }
 
@@ -72,6 +113,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         default:
             return TAPPING_TERM;
     }
+}
+
+void pointing_device_init_user(void) {
+    // set_auto_mouse_layer(4); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
 }
 
 #ifdef OLED_ENABLE
