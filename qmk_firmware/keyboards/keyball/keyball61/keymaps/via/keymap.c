@@ -20,8 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+enum custom_keycodes {
+    MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
+};
+
 // clang-format off
-#if !0
+#if 0
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_universal(
     KC_ESC   , KC_1     , KC_2     , KC_3     , KC_4     , KC_5     ,                                      KC_6     , KC_7     , KC_8     , KC_9     , KC_0     , KC_DEL   ,
@@ -40,7 +44,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [2] = LAYOUT_universal(
-    _______  , LSG(KC_4), LSG(KC_5), XXXXXXX  , XXXXXXX  , KC_SLSH  ,                                      KC_CAPS  , KC_PSCR  , KC_SCRL  , KC_PAUS  , XXXXXXX  , KC_INS   ,
+    _______  , LSG(KC_1), LSG(KC_2), LSG(KC_5), XXXXXXX  , KC_SLSH  ,                                      KC_CAPS  , KC_PSCR  , KC_SCRL  , KC_PAUS  , XXXXXXX  , KC_INS   ,
     _______  , KC_COMM  , KC_7     , KC_8     , KC_9     , KC_ASTR  ,                                      KC_HOME  , KC_END   , KC_BTN3  , KC_BTN4  , KC_BTN5  , _______  ,
     _______  , KC_DOT   , KC_4     , KC_5     , KC_6     , KC_MINS  ,                                      KC_PGUP  , KC_BTN1  , KC_UP    , KC_BTN2  , XXXXXXX  , _______  ,
     _______  , KC_0     , KC_1     , KC_2     , KC_3     , KC_PLUS  , KC_ASTR  ,                KC_LPRN  , KC_PGDN  , KC_LEFT  , KC_DOWN  , KC_RGHT  , XXXXXXX  , _______  ,
@@ -48,12 +52,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [3] = LAYOUT_universal(
-    RGB_TOG  , _______  , _______  , _______  , _______  , _______  ,                                      RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
-    RGB_MOD  , KC_F1    , KC_F2    , KC_F3    , KC_F4    , XXXXXXX  ,                                      RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , XXXXXXX  , _______  ,
-    RGB_RMOD , KC_F5    , KC_F6    , KC_F7    , KC_F8    , KC_MPLY  ,                                      CPI_I1K  , CPI_I100 , CPI_D100 , CPI_D1K  , KBC_SAVE , KBC_RST  ,
+    _______  , RGB_TOG  , RGB_MOD  , RGB_RMOD , _______  , _______  ,                                      RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
+    _______  , KC_F1    , KC_F2    , KC_F3    , KC_F4    , XXXXXXX  ,                                      RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , XXXXXXX  , _______  ,
+    _______  , KC_F5    , KC_F6    , KC_F7    , KC_F8    , KC_MPLY  ,                                      CPI_I1K  , CPI_I100 , CPI_D100 , CPI_D1K  , KBC_SAVE , KBC_RST  ,
     _______  , KC_F9    , KC_F10   , KC_F11   , KC_F12   , XXXXXXX  , EE_CLR  ,                  EE_CLR  , KC_HOME  , KC_PGUP  , KC_PGDN  , KC_END   , SCRL_DVI , SCRL_DVD ,
-    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,                _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
+    _______  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,                _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
   ),
+
+  [4] = LAYOUT_universal(
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , KC_BTN1  , _______  , KC_BTN2  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______
+  ),
+};
 };
 #else
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -83,18 +96,55 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [3] = LAYOUT_universal(
     RGB_TOG  , _______  , _______  , _______  , _______  , _______  ,                                  RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
-    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , _______  ,                                  RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
+    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , MY_TGAM  ,                                  RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
     RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  , _______  , _______  ,                                  CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE , KBC_RST  ,
-    _______  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR  ,            EE_CLR  , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
-    QK_BOOT    , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
+    _______  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
+    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
+  ),
+
+  [4] = LAYOUT_universal(
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  ,                                      _______  , KC_BTN1  , _______  , KC_BTN2  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______  ,
+    _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______
   ),
 };
 #endif
 // clang-format on
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+    switch (keycode) {
+        case MY_TGAM:
+            if (record->event.pressed) {
+                set_auto_mouse_enable(!get_auto_mouse_enable());
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Auto enable scroll mode when the highest layer is 3
-    keyball_set_scroll_mode(get_highest_layer(state) == 3);
+
+    switch(get_highest_layer(remove_auto_mouse_layer(state, true))) {
+        // only be able to change auto mouse mode when they are in layer 0.
+        case 0:
+            // set_auto_mouse_enable(true);
+            keyball_set_scroll_mode(false);
+            break;            
+        case 3:
+            keyball_set_scroll_mode(true);
+            break;
+        default:
+            // other layers can't hold auto mouse mode.
+            // avoid any trouble cause they use a keycode on high pirority layer (ex.layer 4: auto mouse layer)
+            state = remove_auto_mouse_layer(state, false);
+            break;
+    }
+
     return state;
 }
 
@@ -108,6 +158,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         default:
             return TAPPING_TERM;
     }
+}
+
+void pointing_device_init_user(void) {
+    // set_auto_mouse_layer(4); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
 }
 
 #ifdef OLED_ENABLE
