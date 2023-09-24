@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+enum custom_keycodes {
+    MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
+};
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // keymap for default (VIA)
@@ -45,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [3] = LAYOUT_universal(
-    RGB_TOG  , _______  , _______  , _______  , _______  , _______  ,                                        RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
+    RGB_TOG  , _______  , _______  , _______  , _______  , MY_TGAM  ,                                        RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
     RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , SCRL_DVI ,                                        RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
     RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  , _______  , SCRL_DVD ,                                        CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , _______  , KBC_SAVE ,
                   QK_BOOT    , KBC_RST  , _______  ,        _______  , _______  ,                   _______  , _______  , _______       , KBC_RST  , QK_BOOT
@@ -53,10 +57,56 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 // clang-format on
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+    switch (keycode) {
+        case MY_TGAM:
+            if (record->event.pressed) {
+                set_auto_mouse_enable(!get_auto_mouse_enable());
+            }
+            break;
+        default:
+            break;
+    }
+    return true;
+}
+
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Auto enable scroll mode when the highest layer is 3
-    keyball_set_scroll_mode(get_highest_layer(state) == 3);
+
+    switch(get_highest_layer(remove_auto_mouse_layer(state, true))) {
+        // only be able to change auto mouse mode when they are in layer 0.
+        case 0:
+            // set_auto_mouse_enable(true);
+            keyball_set_scroll_mode(false);
+            break;            
+        case 3:
+            keyball_set_scroll_mode(true);
+            break;
+        default:
+            // other layers can't hold auto mouse mode.
+            // avoid any trouble cause they use a keycode on high pirority layer (ex.layer 4: auto mouse layer)
+            state = remove_auto_mouse_layer(state, false);
+            break;
+    }
+
     return state;
+}
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(1,KC_LNG2):
+        case LT(2,KC_ENT):
+        case LT(3,KC_LNG1):
+        case LT(3,KC_BSLS):
+            return 120;  // 130;
+        default:
+            return TAPPING_TERM;
+    }
+}
+
+void pointing_device_init_user(void) {
+    // set_auto_mouse_layer(4); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
 }
 
 #ifdef OLED_ENABLE
