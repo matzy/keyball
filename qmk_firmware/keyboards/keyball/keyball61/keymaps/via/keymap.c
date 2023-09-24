@@ -118,7 +118,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case MY_TGAM:
             if (record->event.pressed) {
-                set_auto_mouse_enable(!get_auto_mouse_enable());
+                bool const is_enable = !get_auto_mouse_enable();
+                if (!is_enable) {
+                    auto_mouse_layer_off();
+                }
+                set_auto_mouse_enable(is_enable);
             }
             break;
         default:
