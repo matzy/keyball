@@ -71,6 +71,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     switch (keycode) {
+        case KC_LWIN:
+        case KC_RWIN:
+            if (record->event.pressed) {
+                auto_mouse_layer_off();
+            }
+            break;
         case MY_TGAM:
             if (record->event.pressed) {
                 bool const is_enable = !get_auto_mouse_enable();
