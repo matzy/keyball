@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+extern void keyball_scrollball_inhibitor_typing_extend(int32_t extend_time);
+
 enum custom_keycodes {
     MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
 };
@@ -69,6 +71,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // clang-format on
  
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+    if (record->event.pressed) {
+
+        keyball_scrollball_inhibitor_typing_extend(10);
+    }
 
     switch (keycode) {
         case KC_LWIN:

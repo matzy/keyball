@@ -42,6 +42,8 @@ keyball_t keyball = {
     .scroll_div  = 0,
 };
 
+static uint32_t keyball_scrollball_inibitor_typing = KEYBALL_SCROLLBALL_INHIBITOR_TYPING;
+
 //////////////////////////////////////////////////////////////////////////////
 // Hook points
 
@@ -222,11 +224,14 @@ static inline bool should_report(void) {
     }
 #endif
 #if defined(KEYBALL_SCROLLBALL_INHIBITOR_TYPING) && KEYBALL_SCROLLBALL_INHIBITOR_TYPING > 0
-    if (TIMER_DIFF_32(now, keyball.last_typed) < KEYBALL_SCROLLBALL_INHIBITOR_TYPING) {
+    if (TIMER_DIFF_32(now, keyball.last_typed) < keyball_scrollball_inibitor_typing) {
         keyball.this_motion.x = 0;
         keyball.this_motion.y = 0;
         keyball.that_motion.x = 0;
         keyball.that_motion.y = 0;
+    }
+    else {
+        keyball_scrollball_inibitor_typing = KEYBALL_SCROLLBALL_INHIBITOR_TYPING;
     }
 #endif
     return true;
@@ -468,6 +473,11 @@ void keyball_set_cpi(uint8_t cpi) {
         pmw3360_cpi_set(cpi == 0 ? CPI_DEFAULT - 1 : cpi - 1);
         pmw3360_reg_write(pmw3360_Motion_Burst, 0);
     }
+}
+
+void keyball_scrollball_inhibitor_typing_extend(int32_t extend_time) {
+
+    keyball_scrollball_inibitor_typing = MIN(keyball_scrollball_inibitor_typing + extend_time, KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX);
 }
 
 //////////////////////////////////////////////////////////////////////////////
