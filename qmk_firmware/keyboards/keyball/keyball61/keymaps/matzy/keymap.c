@@ -84,15 +84,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 auto_mouse_layer_off();
             }
             break;
-        case MY_TGAM:
+        case MY_TGAM: {
+            static uint16_t time_on_pressed;
+            static bool was_enabled;
+            uint16_t const now = timer_read();
+
+            bool const is_enable = get_auto_mouse_enable();
             if (record->event.pressed) {
-                bool const is_enable = !get_auto_mouse_enable();
-                if (!is_enable) {
+                was_enabled = is_enable;
+                time_on_pressed = now;
+                if (is_enable) {
                     auto_mouse_layer_off();
+                    set_auto_mouse_enable(false);
                 }
-                set_auto_mouse_enable(is_enable);
+                break;
             }
+            // event.released.
+            if (TIMER_DIFF_16(now, time_on_pressed) < MY_AUTO_MOUSE_TOGGLE_TIME) {
+                if (was_enabled) {
+                    set_auto_mouse_enable(true);
+                }
+                break;
+            }
+            set_auto_mouse_enable(!was_enabled);
             break;
+        }
         default:
             break;
     }
