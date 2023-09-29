@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+extern void keyball_scrollball_inhibitor_typing_extend(int32_t extend_time);
+
 enum custom_keycodes {
     MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
 };
@@ -75,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_DEL   , KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                                  KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     , KC_INT3  ,
     KC_TAB   , KC_A     , KC_S     , KC_D     , KC_F     , KC_G     ,                                  KC_H     , KC_J     , KC_K     , KC_L     , KC_SCLN  , S(KC_7)  ,
     MO(1)    , KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     , KC_RBRC  ,              KC_NUHS, KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  , KC_RSFT  ,
-    _______  , KC_LCTL  , KC_LALT  , KC_LGUI,LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),    KC_BSPC,LT(2,KC_ENT),LT(1,KC_LNG2),KC_RGUI, _______ , KC_RALT  , KC_PSCR
+    MY_TGAM  , KC_LCTL  , KC_LALT  , KC_LGUI,LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),    KC_BSPC,LT(2,KC_ENT),LT(1,KC_LNG2),KC_RGUI, _______ , KC_RALT  , KC_PSCR
   ),
 
   [1] = LAYOUT_universal(
@@ -96,7 +98,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [3] = LAYOUT_universal(
     RGB_TOG  , _______  , _______  , _______  , _______  , _______  ,                                  RGB_M_P  , RGB_M_B  , RGB_M_R  , RGB_M_SW , RGB_M_SN , RGB_M_K  ,
-    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , MY_TGAM  ,                                  RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
+    RGB_MOD  , RGB_HUI  , RGB_SAI  , RGB_VAI  , _______  , _______  ,                                  RGB_M_X  , RGB_M_G  , RGB_M_T  , RGB_M_TW , _______  , _______  ,
     RGB_RMOD , RGB_HUD  , RGB_SAD  , RGB_VAD  , _______  , _______  ,                                  CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE , KBC_RST  ,
     _______  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
     QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  , _______  , _______  , _______  , _______  , QK_BOOT
@@ -115,16 +117,44 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
+    if (record->event.pressed) {
+
+        keyball_scrollball_inhibitor_typing_extend(10);
+    }
+
     switch (keycode) {
-        case MY_TGAM:
+        case KC_LWIN:
+        case KC_RWIN:
             if (record->event.pressed) {
-                bool const is_enable = !get_auto_mouse_enable();
-                if (!is_enable) {
-                    auto_mouse_layer_off();
-                }
-                set_auto_mouse_enable(is_enable);
+                auto_mouse_layer_off();
             }
             break;
+
+        case MY_TGAM: {
+            static uint16_t time_on_pressed;
+            static bool was_enabled;
+            uint16_t const now = timer_read();
+
+            bool const is_enable = get_auto_mouse_enable();
+            if (record->event.pressed) {
+                was_enabled = is_enable;
+                time_on_pressed = now;
+                if (is_enable) {
+                    auto_mouse_layer_off();
+                    set_auto_mouse_enable(false);
+                }
+                break;
+            }
+            // event.released.
+            if (TIMER_DIFF_16(now, time_on_pressed) < MY_AUTO_MOUSE_TOGGLE_TIME) {
+                if (was_enabled) {
+                    set_auto_mouse_enable(true);
+                }
+                break;
+            }
+            set_auto_mouse_enable(!was_enabled);
+            break;
+        }
         default:
             break;
     }

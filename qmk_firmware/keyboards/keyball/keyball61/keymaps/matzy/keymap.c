@@ -78,12 +78,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (keycode) {
+#if 0
         case KC_LWIN:
         case KC_RWIN:
             if (record->event.pressed) {
                 auto_mouse_layer_off();
             }
             break;
+#endif
+
         case MY_TGAM: {
             static uint16_t time_on_pressed;
             static bool was_enabled;

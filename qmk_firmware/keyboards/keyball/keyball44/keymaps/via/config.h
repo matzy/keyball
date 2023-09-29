@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define KEYBALL_CPI_DEFAULT 1000
 #define KEYBALL_SCROLL_DIV_DEFAULT 5
 #define KEYBALL_SCROLLBALL_INHIBITOR_TYPING 200
+#define KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX 400
 
 // mouse report rate throttling 500hz. default:8 =125hz
 #define KEYBALL_REPORTMOUSE_INTERVAL 4
@@ -51,3 +52,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define POINTING_DEVICE_AUTO_MOUSE_ENABLE
 #define AUTO_MOUSE_DEFAULT_LAYER 4
 #define AUTO_MOUSE_TIME 10000
+
+#define MY_AUTO_MOUSE_TOGGLE_TIME 1000

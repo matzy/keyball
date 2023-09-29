@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+extern void keyball_scrollball_inhibitor_typing_extend(int32_t extend_time);
+
 enum custom_keycodes {
     MY_TGAM = SAFE_RANGE,   // toggle auto mouse mode.
 };
@@ -59,16 +61,44 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
+    if (record->event.pressed) {
+
+        keyball_scrollball_inhibitor_typing_extend(10);
+    }
+
     switch (keycode) {
-        case MY_TGAM:
+        case KC_LWIN:
+        case KC_RWIN:
             if (record->event.pressed) {
-                bool const is_enable = !get_auto_mouse_enable();
-                if (!is_enable) {
-                    auto_mouse_layer_off();
-                }
-                set_auto_mouse_enable(is_enable);
+                auto_mouse_layer_off();
             }
             break;
+
+        case MY_TGAM: {
+            static uint16_t time_on_pressed;
+            static bool was_enabled;
+            uint16_t const now = timer_read();
+
+            bool const is_enable = get_auto_mouse_enable();
+            if (record->event.pressed) {
+                was_enabled = is_enable;
+                time_on_pressed = now;
+                if (is_enable) {
+                    auto_mouse_layer_off();
+                    set_auto_mouse_enable(false);
+                }
+                break;
+            }
+            // event.released.
+            if (TIMER_DIFF_16(now, time_on_pressed) < MY_AUTO_MOUSE_TOGGLE_TIME) {
+                if (was_enabled) {
+                    set_auto_mouse_enable(true);
+                }
+                break;
+            }
+            set_auto_mouse_enable(!was_enabled);
+            break;
+        }
         default:
             break;
     }
