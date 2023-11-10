@@ -124,7 +124,7 @@ typedef struct {
     uint8_t cpi_value;
     bool    cpi_changed;
 
-    bool     scroll_mode;
+    int8_t  scroll_mode;
     uint32_t scroll_mode_changed;
     uint8_t  scroll_div;
 

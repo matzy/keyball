@@ -35,13 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAP_CODE_DELAY 5
 
+// #define LAYER_STATE_8BIT
+
 #define KEYBALL_CPI_DEFAULT 1000
 #define KEYBALL_SCROLL_DIV_DEFAULT 5
 #define KEYBALL_SCROLLBALL_INHIBITOR_TYPING 200
-#define KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX 400
+#define KEYBALL_SCROLLBALL_INHIBITOR_TYPING_STEP 0
+#define KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX 200
 
 // mouse report rate throttling 500hz. default:8 =125hz
-#define KEYBALL_REPORTMOUSE_INTERVAL 4
+#define KEYBALL_REPORTMOUSE_INTERVAL 5
 
 #define TAPPING_TERM_PER_KEY
 // #define PERMISSIVE_HOLD
@@ -53,4 +56,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AUTO_MOUSE_DEFAULT_LAYER 4
 #define AUTO_MOUSE_TIME 10000
 
-#define MY_AUTO_MOUSE_TOGGLE_TIME 1000
+#define MY_AUTO_MOUSE_TOGGLE_TIME 1500

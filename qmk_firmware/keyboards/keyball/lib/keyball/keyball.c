@@ -38,11 +38,11 @@ keyball_t keyball = {
     .cpi_value   = 0,
     .cpi_changed = false,
 
-    .scroll_mode = false,
+    .scroll_mode = 0,
     .scroll_div  = 0,
 };
 
-static uint32_t keyball_scrollball_inibitor_typing = KEYBALL_SCROLLBALL_INHIBITOR_TYPING;
+static uint32_t keyball_scrollball_inibitor_typing = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 // Hook points
@@ -231,7 +231,7 @@ static inline bool should_report(void) {
         keyball.that_motion.y = 0;
     }
     else {
-        keyball_scrollball_inibitor_typing = KEYBALL_SCROLLBALL_INHIBITOR_TYPING;
+        keyball_scrollball_inibitor_typing = 0;
     }
 #endif
     return true;
@@ -251,8 +251,8 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t rep) {
     // report mouse event, if keyboard is primary.
     if (is_keyboard_master() && should_report()) {
         // modify mouse report by PMW3360 motion.
-        motion_to_mouse(&keyball.this_motion, &rep, is_keyboard_left(), keyball.scroll_mode);
-        motion_to_mouse(&keyball.that_motion, &rep, !is_keyboard_left(), keyball.scroll_mode ^ keyball.this_have_ball);
+        motion_to_mouse(&keyball.this_motion, &rep, is_keyboard_left(), keyball.scroll_mode > 0);
+        motion_to_mouse(&keyball.that_motion, &rep, !is_keyboard_left(), (keyball.scroll_mode > 0) ^ keyball.this_have_ball);
         // store mouse report for OLED.
         keyball.last_mouse = rep;
     }
@@ -382,7 +382,7 @@ void keyball_oled_render_ballinfo(void) {
     oled_write_P(PSTR("     CPI"), false);
     oled_write(format_4d(keyball_get_cpi()) + 1, false);
     oled_write_P(PSTR("00  S"), false);
-    oled_write_char(keyball.scroll_mode ? '1' : '0', false);
+    oled_write_char(keyball.scroll_mode > 0 ? '1' : '0', false);
     oled_write_P(PSTR("  D"), false);
     oled_write_char('0' + keyball_get_scroll_div(), false);
 #endif
@@ -441,14 +441,21 @@ void keyball_oled_render_layerinfo(void) {
 // Public API functions
 
 bool keyball_get_scroll_mode(void) {
-    return keyball.scroll_mode;
+    return keyball.scroll_mode > 0;
 }
 
 void keyball_set_scroll_mode(bool mode) {
-    if (mode != keyball.scroll_mode) {
-        keyball.scroll_mode_changed = timer_read32();
+    if (mode) {
+        // ++keyball.scroll_mode;
+        keyball.scroll_mode = 1;
     }
-    keyball.scroll_mode = mode;
+    else {
+        // if (keyball.scroll_mode > 0)
+        //     --keyball.scroll_mode;
+        keyball.scroll_mode = 0;
+    }
+    
+    keyball.scroll_mode_changed = timer_read32();
 }
 
 uint8_t keyball_get_scroll_div(void) {
@@ -477,7 +484,9 @@ void keyball_set_cpi(uint8_t cpi) {
 
 void keyball_scrollball_inhibitor_typing_extend(int32_t extend_time) {
 
-    keyball_scrollball_inibitor_typing = MIN(keyball_scrollball_inibitor_typing + extend_time, KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX);
+    keyball_scrollball_inibitor_typing = (keyball_scrollball_inibitor_typing > 0) 
+        ? MIN(keyball_scrollball_inibitor_typing + extend_time, KEYBALL_SCROLLBALL_INHIBITOR_TYPING_MAX)
+        : KEYBALL_SCROLLBALL_INHIBITOR_TYPING;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -597,3 +606,13 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+#if defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
+bool is_mouse_record_kb(uint16_t keycode, keyrecord_t* record)
+{
+    switch (keycode) {
+        case SCRL_MO:
+            return true;
+    }
+    return is_mouse_record_user(keycode, record);
+}
+#endif// defined(POINTING_DEVICE_AUTO_MOUSE_ENABLE)
