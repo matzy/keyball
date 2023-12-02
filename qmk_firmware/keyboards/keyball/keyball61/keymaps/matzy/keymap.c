@@ -36,7 +36,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB   , KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                                      KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     , KC_MINS   ,
     KC_LCTL  , KC_A     , KC_S     , KC_D     , KC_F     , KC_G     ,                                      KC_H     , KC_J     , KC_K     , KC_L     , KC_SCLN  ,RALT_T(KC_QUOT),
     KC_LSFT  , KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     , KC_B     ,                  KC_B   , KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,RSFT_T(KC_EQL),
-    KC_LCTL  , MY_TGAM  , KC_LGUI ,LALT_T(KC_ESC),LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1), LT(1,KC_BSPC), MO(2) ,LT(1,KC_LNG2), KC_RGUI  , _______  , KC_RALT  , MO(3)
+    KC_LCTL  , MY_TGAM  , KC_LGUI ,LALT_T(KC_ESC),LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),LT(1,KC_BSPC),LT(2,KC_SPC),LT(1,KC_LNG2),KC_RGUI,_______  , KC_RALT  , MO(3)
   ),
 
   [1] = LAYOUT_universal(
@@ -122,7 +122,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 // clang-format on
- 
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     if (record->event.pressed) {
@@ -151,7 +151,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 s_was_enabled = is_enable;
                 s_time_on_pressed = now;
             }
-            
+
             if (TIMER_DIFF_16(now, s_time_on_pressed) < MY_AUTO_MOUSE_TOGGLE_TIME) {
 
                 if (record->event.pressed) {
@@ -162,7 +162,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     break;
                 }
                 // event.released.
-                
+
                 if (s_was_enabled) {
                     set_auto_mouse_enable(true);
                 }
