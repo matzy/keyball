@@ -131,14 +131,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (keycode) {
-#if !0
+#ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
         case KC_LWIN:
         case KC_RWIN:
             if (record->event.pressed) {
                 auto_mouse_layer_off();
             }
             break;
-#endif
 
         case MY_TGAM: {
             static uint16_t s_time_on_pressed;
@@ -175,6 +174,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             set_auto_mouse_enable(!s_was_enabled);
             break;
         }
+#endif// POINTING_DEVICE_AUTO_MOUSE_ENABLE
+
         default:
             break;
     }
@@ -188,7 +189,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     // changed a simple that is safe.
     // will be highest_layer is 3 when call this funciton at changed to layer 3 and 4.
     // but a simple code is going to safe.
-    uint8_t const highest_layer = get_highest_layer(remove_auto_mouse_layer(state, true));
+    uint8_t const highest_layer = get_highest_layer(
+#ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
+        remove_auto_mouse_layer(state, true)
+#else // POINTING_DEVICE_AUTO_MOUSE_ENABLE
+        state
+#endif// POINTING_DEVICE_AUTO_MOUSE_ENABLE
+        );
     if (highest_layer != 3) {
         keyball_set_scroll_mode(false);
     }
@@ -224,8 +231,10 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 #endif// defined(TAPPING_TERM_PER_KEY)
 
 void pointing_device_init_user(void) {
+#ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
     // set_auto_mouse_layer(4); // only required if AUTO_MOUSE_DEFAULT_LAYER is not set to index of <mouse_layer>
     set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+#endif// POINTING_DEVICE_AUTO_MOUSE_ENABLE
 }
 
 #ifdef OLED_ENABLE
