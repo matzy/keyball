@@ -36,7 +36,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB   , KC_Q     , KC_W     , KC_E     , KC_R     , KC_T     ,                                      KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     , KC_MINS   ,
     KC_LCTL  , KC_A     , KC_S     , KC_D     , KC_F     , KC_G     ,                                      KC_H     , KC_J     , KC_K     , KC_L     , KC_SCLN  ,RALT_T(KC_QUOT),
     KC_LSFT  , KC_Z     , KC_X     , KC_C     , KC_V     , KC_B     , KC_B     ,                  KC_B   , KC_N     , KC_M     , KC_COMM  , KC_DOT   , KC_SLSH  ,RSFT_T(KC_EQL),
-    KC_LCTL  , KC_LGUI  , MY_TGAM ,LALT_T(KC_ESC),LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),LT(1,KC_BSPC),LT(2,KC_SPC),LT(1,KC_LNG2),KC_RGUI,_______  , KC_RALT  , MO(3)
+    KC_LCTL  , MY_TGAM  , KC_LGUI  , KC_LALT  ,LT(1,KC_LNG2),LT(2,KC_SPC),LT(3,KC_LNG1),  LT(1,KC_BSPC),LT(2,KC_SPC),LT(1,KC_LNG2),KC_RGUI,_______   , KC_RALT  , MO(3)
   ),
 
   [1] = LAYOUT_universal(
@@ -44,7 +44,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_ESC   , KC_QUES  , XXXXXXX  , KC_EXLM  , KC_PERC  , KC_TILD  ,                                      KC_INT3  , KC_LPRN  , KC_RPRN  , XXXXXXX  , KC_PIPE  , KC_F12   ,
     _______  , KC_AT    , KC_SLSH  , KC_DLR   , XXXXXXX  , KC_GRV   ,                                      KC_HASH  , KC_LCBR  , KC_RCBR  , KC_LBRC  , KC_RBRC  , _______  ,
     _______  , XXXXXXX  , XXXXXXX  , KC_CIRC  , XXXXXXX  , KC_BSLS  , KC_BSLS  ,                 KC_BSLS , KC_AMPR  , KC_ASTR  , KC_LABK  , KC_RABK  , XXXXXXX  , _______  ,
-    _______  , _______  , _______  , _______  , KC_LNG3  , _______  , KC_LNG4  ,                 KC_DEL  , _______  , _______  , _______  , _______  , _______  , _______
+    _______  , _______  , _______  , _______  , KC_LNG3  , _______  , KC_LNG4  ,                 _______ , _______  , _______  , _______  , _______  , _______  , _______
   ),
 
 #if 0
@@ -98,7 +98,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #else // like a vim style.
   [2] = LAYOUT_universal(
     _______  , LSG(KC_1), LSG(KC_2), LSG(KC_5), XXXXXXX  , KC_SLSH  ,                                      KC_CAPS  , KC_PSCR  , KC_SCRL  , KC_PAUS  , XXXXXXX  , _______  ,
-    _______  , KC_COMM  , KC_7     , KC_8     , KC_9     , KC_ASTR  ,                                      KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , KC_INS   , KC_DEL   ,
+    KC_ESC   , KC_COMM  , KC_7     , KC_8     , KC_9     , KC_ASTR  ,                                      KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , KC_INS   , KC_DEL   ,
     _______  , KC_DOT   , KC_4     , KC_5     , KC_6     , KC_MINS  ,                                      KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , KC_ENT   , _______  ,
     _______  , KC_0     , KC_1     , KC_2     , KC_3     , KC_PLUS  , KC_ASTR  ,                KC_LPRN  , KC_BTN3  , KC_BTN4  , KC_BTN1  , KC_BTN2  , KC_BTN5  , _______  ,
     _______  , _______  , _______  , _______  , _______  , _______  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______
@@ -114,7 +114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #endif
   [3] = LAYOUT_universal(
     _______  , RGB_TOG  , RGB_MOD  , RGB_RMOD ,LCG(KC_LEFT),LCG(KC_RIGHT),                                 XXXXXXX  , XXXXXXX  , XXXXXXX  , KBC_SAVE , KBC_RST  , _______  ,
-    _______  , KC_F1    , KC_F2    , KC_F3    , KC_F4    , XXXXXXX  ,                                      CPI_I1K  , CPI_I100 , CPI_D100 , CPI_D1K  , XXXXXXX  , _______  ,
+    KC_ESC   , KC_F1    , KC_F2    , KC_F3    , KC_F4    , XXXXXXX  ,                                      CPI_I1K  , CPI_I100 , CPI_D100 , CPI_D1K  , XXXXXXX  , _______  ,
     _______  , KC_F5    , KC_F6    , KC_F7    , KC_F8    , KC_MPLY  ,                                   LCG(KC_LEFT), XXXXXXX  , XXXXXXX,LCG(KC_RIGHT),SCRL_DVI , _______  ,
     _______  , KC_F9    , KC_F10   , KC_F11   , KC_F12   , XXXXXXX  , QK_BOOT  ,                EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , SCRL_DVD , _______ ,
     _______  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,                _______  , _______  , _______  , _______  , _______  , _______  , _______
